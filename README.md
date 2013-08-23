@@ -2,8 +2,7 @@
 
 A express logger middleware powered by [bunyan](https://github.com/trentm/node-bunyan).
 
--- travis ci
-[![Build Status](https://travis-ci.org/villadora/bunyan-logger?branch=master)](https://travis-ci.org/villadora/bunyan-logger)
+[![Build Status](https://travis-ci.org/villadora/express-bunyan-logger?branch=master)](https://travis-ci.org/villadora/express-bunyan-logger)
 
 ## Installation
 
