@@ -1,7 +1,28 @@
-# Title
+# Express-bunyan-logger
+
+A express logger middleware powered by [bunyan](https://github.com/trentm/node-bunyan).
 
 -- travis ci
-[![Build Status](https://travis-ci.org/villadora/<project>?branch=master)](https://travis-ci.org/villadora/<project>)
+[![Build Status](https://travis-ci.org/villadora/bunyan-logger?branch=master)](https://travis-ci.org/villadora/bunyan-logger)
+
+## Installation
+
+    npm install express-bunyan-logger
+    
+   
+## Usage
+
+To use the logger: 
+
+    app.courier(require('express-bunyan-logger')());
+
+To use the errorLogger:
+
+    app.courier(require('express-bunyan-logger').errorLogger());
+
+And you can also pass bunyan logger options to the logger middleware:
+
+    app.courier(require('express-bunyan-logger')({name: 'logger', streams : [ {level :'info', stream: process.stdout}]}));
 
 ## License
 
