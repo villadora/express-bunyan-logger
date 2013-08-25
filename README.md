@@ -40,8 +40,8 @@ And you can also pass bunyan logger options to the logger middleware:
        documentation and/or other materials provided with the distribution.
     3. All advertising materials mentioning features or use of this software
        must display the following acknowledgement:
-       This product includes software developed by the <organization>.
-    4. Neither the name of the <organization> nor the
+       This product includes software developed by the villa.gao.
+    4. Neither the name of the villa.gao nor the
        names of its contributors may be used to endorse or promote products
        derived from this software without specific prior written permission.
                      
