@@ -1,6 +1,5 @@
 var bunyan = require('bunyan'),
-useragent = require('useragent')
-;
+    useragent = require('useragent');
 
 
 module.exports = function(opts) {

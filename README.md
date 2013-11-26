@@ -8,21 +8,20 @@ A express logger middleware powered by [bunyan](https://github.com/trentm/node-b
 ## Installation
 
     npm install express-bunyan-logger
-    
    
 ## Usage
 
 To use the logger: 
 
-    app.courier(require('express-bunyan-logger')());
+    app.use(require('express-bunyan-logger')());
 
 To use the errorLogger:
 
-    app.courier(require('express-bunyan-logger').errorLogger());
+    app.use(require('express-bunyan-logger').errorLogger());
 
 And you can also pass bunyan logger options to the logger middleware:
 
-    app.courier(require('express-bunyan-logger')({name: 'logger', streams : [ {level :'info', stream: process.stdout}]}));
+    app.use(require('express-bunyan-logger')({name: 'logger', streams : [ {level :'info', stream: process.stdout}]}));
 
 ## License
 

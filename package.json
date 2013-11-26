@@ -1,6 +1,6 @@
 {
     "name": "express-bunyan-logger",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "a bunyan logger middleware for express",
     "main": "index.js",
     "scripts": {
@@ -8,7 +8,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/villadora/exporess-buyan-logger.git"
+        "url": "https://github.com/villadora/express-bunyan-logger.git"
     },
     "keywords": [
         "express",
