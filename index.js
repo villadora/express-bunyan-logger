@@ -89,6 +89,6 @@ function compile(fmt) {
         if(arg)
             return '"\n + (meta["' + name + '"] ? meta["'+ name + '"]["'+ arg + '"] : "-") + "';
         return '"\n    + ((meta["' + name + '"]) || "-") + "';
-    }) + '";'
+    }) + '";';
     return new Function('meta', js);
-};
+}
