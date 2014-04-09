@@ -21,7 +21,20 @@ To use the errorLogger:
 
 And you can also pass bunyan logger options to the logger middleware:
 
-    app.use(require('express-bunyan-logger')({name: 'logger', streams : [ {level :'info', stream: process.stdout}]}));
+    app.use(require('express-bunyan-logger')({
+        name: 'logger', 
+        streams: [{
+            level: 'info',
+            stream: process.stdout
+            }]
+        }));
+
+Change default format:
+
+    app.use(require('express-bunyan-logger')({
+        format: ":remote-address - :user-agent[major] custom logger"
+    });
+    
 
 ## License
 
