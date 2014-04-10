@@ -11,11 +11,13 @@ module.exports = function(opts) {
 
 
 module.exports.errorLogger = function(opts) {
-    var logger, opts = opts || {
-        // default format 
-        format: ":remote-address - :method :url HTTP/:http-version :status-code :content-length :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os]"
-    };
-    (typeof opts.format != 'function') && (opts.format = compile(opts.format));
+    var logger, opts = opts || {}, format;
+
+    // default format 
+    format =  opts.format || ":remote-address - :method :url HTTP/:http-version :status-code :content-length :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os]";
+    delete opts.format; // don't pass it to bunyan
+
+    (typeof format != 'function') && (format = compile(format));
 
     return function(err, req, res, next) {
         function logging() {
@@ -24,12 +26,12 @@ module.exports.errorLogger = function(opts) {
 
             var app = req.app || res.app,
                 status = res.statusCode,
-            method = req.method,
-            url = req.url || '-',
-            referer = req.header('referer') || '-',
-            ua = useragent.parse(req.header('user-agent')),
-            httpVersion = req.httpVersionMajor+'.'+req.httpVersionMinor,
-            ip, logFn;
+                method = req.method,
+                url = req.url || '-',
+                referer = req.header('referer') || '-',
+                ua = useragent.parse(req.header('user-agent')),
+                httpVersion = req.httpVersionMajor+'.'+req.httpVersionMinor,
+                ip, logFn;
 
 
             if(!logger) {
@@ -71,7 +73,7 @@ module.exports.errorLogger = function(opts) {
 
             err && (meta.err = err);
 
-            logFn.call(logger, meta, opts.format(meta));
+            logFn.call(logger, meta, format(meta));
         }
         
         res.on('finish', logging);

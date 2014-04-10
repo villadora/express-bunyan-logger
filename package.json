@@ -1,6 +1,6 @@
 {
     "name": "express-bunyan-logger",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "a bunyan logger middleware for express",
     "main": "index.js",
     "scripts": {

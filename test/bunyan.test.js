@@ -6,7 +6,7 @@ var express = require('express'),
 describe('bunyan-logger', function() {
     it('test logger', function(done) {
         var app = express();
-        app.use(bunyanLogger());
+        app.use(bunyanLogger({}));
         
         app.get('/', function(req, res) {
             res.send('GET /');
