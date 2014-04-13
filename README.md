@@ -36,6 +36,31 @@ Change default format:
     });
     
 
+## Configuration
+
+### options.format
+
+Format string, please go the source code to the metadata. ":name" will print out meta.name; ":name[key]" will print out the property 'key' of meta.name.
+
+### options.parseUA
+
+Whether to parse _user-agent_ in logger, default is =true=.
+
+### options.levelFn
+
+Function that translate statusCode into log level.
+
+```
+function(status, err /* only will work in error logger */) {
+     // return string of level
+     return "info";
+}
+```
+
+### options.immediate
+
+Write log line on request instead of response (for response times)
+
 ## License
 
 (The BSD License)

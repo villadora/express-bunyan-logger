@@ -11,15 +11,30 @@ module.exports = function(opts) {
 
 
 module.exports.errorLogger = function(opts) {
-    var logger, opts = opts || {}, format;
+    var logger, opts = opts || {}, format, 
+        immediate = false, 
+        parseUA = true,
+        levelFn = defaultLevelFn;
 
     // default format 
-    format =  opts.format || ":remote-address - :method :url HTTP/:http-version :status-code :content-length :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os]";
+    format =  opts.format || ":remote-address - :method :url HTTP/:http-version :status-code :res-headers[content-length] :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os] :response-time ms";
     delete opts.format; // don't pass it to bunyan
-
     (typeof format != 'function') && (format = compile(format));
+    
+    opts.hasOwnProperty('parseUA') && (parseUA = opts.parseUA, delete opts.parseUA);
+
+    if(opts.immediate) {
+        immediate = opts.immediate;
+        delete opts.immediate;
+    }
+
+    if(opts.levelFn) {
+        levelFn = opts.levelFn;
+        delete opts.levelFn;
+    }
 
     return function(err, req, res, next) {
+        var startTime = Date.now();
         function logging() {
             res.removeListener('finish', logging);
             res.removeListener('close', logging);
@@ -28,9 +43,10 @@ module.exports.errorLogger = function(opts) {
                 status = res.statusCode,
                 method = req.method,
                 url = req.url || '-',
-                referer = req.header('referer') || '-',
-                ua = useragent.parse(req.header('user-agent')),
+                referer = req.header('referer') || req.header('referrer') || '-',
+                ua = parseUA ? useragent.parse(req.header('user-agent')) : req.header('user-agent'),
                 httpVersion = req.httpVersionMajor+'.'+req.httpVersionMinor,
+                responseTime = Date.now() - startTime,
                 ip, logFn;
 
 
@@ -43,13 +59,9 @@ module.exports.errorLogger = function(opts) {
                 logger = bunyan.createLogger(opts);
             }
 
-            if(err || status >= 500) { // server internal error or error
-                logFn = logger.error;
-            }else if (status >= 400) { // client error
-                logFn = logger.warn;
-            }else { // redirect/success
-                logFn = logger.info;
-            }
+
+            var level = levelFn(status, err);
+            logFn = logger[level] ? logger[level] : logger.info;
 
             ip = ip || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) || 
@@ -65,19 +77,25 @@ module.exports.errorLogger = function(opts) {
                 'user-agent': ua,
                 'body': req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)),
                 'http-version': httpVersion,
+                'response-time': responseTime.toString(),
                 "status-code": status,
-                'content-length': req.get('Content-Length'),
+                'req-headers': req.headers,
+                'res-headers': res._headers,
                 'req': req,
                 'res': res
             };
 
             err && (meta.err = err);
-
             logFn.call(logger, meta, format(meta));
         }
+
         
-        res.on('finish', logging);
-        res.on('close', logging);
+        if(immediate) {
+            logging();
+        }else {
+            res.on('finish', logging);
+            res.on('close', logging);
+        }
 
         next();
     };
@@ -89,8 +107,18 @@ function compile(fmt) {
     fmt = fmt.replace(/"/g, '\\"');
     var js = '  return "' + fmt.replace(/:([-\w]{2,})(?:\[([^\]]+)\])?/g, function(_, name, arg){
         if(arg)
-            return '"\n + (meta["' + name + '"] ? meta["'+ name + '"]["'+ arg + '"] : "-") + "';
+            return '"\n + (meta["' + name + '"] ? (meta["'+ name + '"]["'+ arg + '"]||"-") : "-") + "';
         return '"\n    + ((meta["' + name + '"]) || "-") + "';
     }) + '";';
     return new Function('meta', js);
+}
+
+
+function defaultLevelFn(status, err) {
+    if(err || status >= 500) { // server internal error or error
+        return "error"
+    }else if (status >= 400) { // client error
+        return "warn";
+    }
+    return "info";
 }
