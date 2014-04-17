@@ -16,8 +16,8 @@
         "bunyan"
     ],
     "dependencies": {
-        "bunyan": "~0.21.4",
-        "useragent": "~2.0.7"
+        "bunyan": "0.22.3",
+        "useragent": "2.0.8"
     },
     "devDependencies": {
         "express": "3.x",
