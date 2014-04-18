@@ -42,6 +42,8 @@ Change default format:
 
 Format string, please go the source code to the metadata. ":name" will print out meta.name; ":name[key]" will print out the property 'key' of meta.name.
 
+Or you can pass a function to _options.format_. This function accept a object as argument and return string.
+
 ### options.parseUA
 
 Whether to parse _user-agent_ in logger, default is =true=.

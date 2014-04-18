@@ -78,7 +78,8 @@ module.exports.errorLogger = function (opts) {
                 'url': url,
                 'referer': referer,
                 'user-agent': ua,
-                'body': req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)), //TODO may we want more of the body here and truncate it later?
+                'body': req.body,
+                'short-body':req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)),
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "status-code": status,
@@ -113,14 +114,13 @@ function compile(fmt) {
             return '"\n + (meta["' + name + '"] ? (meta["' + name + '"]["' + arg + '"]|| (typeof meta["' + name + '"]["' + arg + '"] === "number"?"0": "-")) : "-") + "';
         return '"\n    + ((meta["' + name + '"]) || (typeof meta["'+name+'"] === "number"?"0": "-")) + "';
     }) + '";';
-    //console.log("js:"+js);
     return new Function('meta', js);
 }
 
 
 function defaultLevelFn(status, err) {
     if (err || status >= 500) { // server internal error or error
-        return "error"
+        return "error";
     } else if (status >= 400) { // client error
         return "warn";
     }
