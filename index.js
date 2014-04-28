@@ -66,7 +66,7 @@ module.exports.errorLogger = function (opts) {
             var level = levelFn(status, err);
             logFn = logger[level] ? logger[level] : logger.info;
 
-            ip = ip || req.ip || req.connection.remoteAddress ||
+            ip = ip || (req.headers?req.headers['x-forwarded-for']:null) || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
                 (req.socket.socket && req.socket.socket.remoteAddresss) ||
                 '127.0.0.1';
