@@ -37,7 +37,7 @@ module.exports.errorLogger = function (opts) {
         var startTime = Date.now();
 
         function logging(incoming) {
-            if(!incoming) {
+            if (!incoming) {
                 res.removeListener('finish', logging);
                 res.removeListener('close', logging);
             }
@@ -66,7 +66,7 @@ module.exports.errorLogger = function (opts) {
             var level = levelFn(status, err);
             logFn = logger[level] ? logger[level] : logger.info;
 
-            ip = ip || req.ip || req.connection.remoteAddress ||
+            ip = ip || (req.headers ? req.headers['x-forwarded-for'] : null) || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
                 (req.socket.socket && req.socket.socket.remoteAddresss) ||
                 '127.0.0.1';
@@ -79,7 +79,7 @@ module.exports.errorLogger = function (opts) {
                 'referer': referer,
                 'user-agent': ua,
                 'body': req.body,
-                'short-body':req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)),
+                'short-body': req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)),
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "status-code": status,
@@ -87,7 +87,7 @@ module.exports.errorLogger = function (opts) {
                 'res-headers': res._headers,
                 'req': req,
                 'res': res,
-                'incoming':incoming?'-->':'<--'
+                'incoming': incoming ? '-->' : '<--'
             };
 
             err && (meta.err = err);
@@ -112,7 +112,7 @@ function compile(fmt) {
     var js = '  return "' + fmt.replace(/:([-\w]{2,})(?:\[([^\]]+)\])?/g, function (_, name, arg) {
         if (arg)
             return '"\n + (meta["' + name + '"] ? (meta["' + name + '"]["' + arg + '"]|| (typeof meta["' + name + '"]["' + arg + '"] === "number"?"0": "-")) : "-") + "';
-        return '"\n    + ((meta["' + name + '"]) || (typeof meta["'+name+'"] === "number"?"0": "-")) + "';
+        return '"\n    + ((meta["' + name + '"]) || (typeof meta["' + name + '"] === "number"?"0": "-")) + "';
     }) + '";';
     return new Function('meta', js);
 }
