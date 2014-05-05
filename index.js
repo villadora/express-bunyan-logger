@@ -1,5 +1,6 @@
 var bunyan = require('bunyan'),
-    useragent = require('useragent');
+    useragent = require('useragent'),
+    util = require('util');
 
 
 module.exports = function (opts) {
@@ -79,7 +80,7 @@ module.exports.errorLogger = function (opts) {
                 'referer': referer,
                 'user-agent': ua,
                 'body': req.body,
-                'short-body':req.body && req.body.toString && req.body.toString().substring(0, Math.max(req.body.toString().length, 20)),
+                'short-body': util.inspect(req.body).substring(0, 20),
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "status-code": status,
