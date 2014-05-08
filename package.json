@@ -34,5 +34,10 @@
         "name": "wei.gao",
         "email": "jky239@gmail.com"
     },
+    "contributors": [
+        "Ognian Tschakalov <ognian.tschakalov@ogi-it.com>",
+        "Simon Wade <simon.wade@gmail.com>", 
+        "Wei Gao <jky239@gmail.com>"
+    ],
     "license": "BSD"
 }
