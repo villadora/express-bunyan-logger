@@ -48,6 +48,30 @@ describe('bunyan-logger', function() {
                 done();
             });
     });
+
+    it('errorLogger should call next error middleware', function(done) {
+        var middlewareCalled = false;
+        var app = express();
+        app.use(app.router);
+        app.use(bunyanLogger.errorLogger());
+        app.use(function (err, req, res, next) {
+            middlewareCalled = true;
+            next(err);
+        });
+
+        app.get('/', function(req, res) {
+            throw new Error();
+        });
+
+        request(app)
+            .get('/')
+            .expect(function () {
+                if (!middlewareCalled) {
+                    throw new Error('middleware was not called');
+                }
+            })
+            .end(done);
+    });
 });
 
 
