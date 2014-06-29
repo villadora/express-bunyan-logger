@@ -103,7 +103,7 @@ module.exports.errorLogger = function (opts) {
         res.on('close', logging);
 
 
-        next();
+        next(err);
     };
 };
 
