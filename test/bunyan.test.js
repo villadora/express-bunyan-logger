@@ -1,7 +1,7 @@
-var express = require('express'),
-    request = require('supertest'),
-    bunyanLogger = require('../');
-
+var express = require('express');
+var request = require('supertest');
+var bunyanLogger = require('../');
+var through = require('through2');
 
 describe('bunyan-logger', function() {
     it('test logger', function(done) {

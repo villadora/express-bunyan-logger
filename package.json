@@ -1,43 +1,44 @@
 {
-    "name": "express-bunyan-logger",
-    "version": "0.1.3",
-    "description": "a bunyan logger middleware for express",
-    "main": "index.js",
-    "scripts": {
-        "test": "make test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/villadora/express-bunyan-logger.git"
-    },
-    "keywords": [
-        "express",
-        "logger",
-        "bunyan"
-    ],
-    "dependencies": {
-        "bunyan": "~0.23.0",
-        "useragent": "~2.0.8"
-    },
-    "devDependencies": {
-        "express": "3.x",
-        "supertest": "*",
-        "grunt": "~0.4.1",
-        "jshint": "~2.1.9",
-        "mocha": "~1.12.0",
-        "grunt-contrib-jshint": "~0.3.0",
-        "grunt-contrib-clean": "~0.4.0",
-        "grunt-contrib-watch": "~0.3.0"
-    },
-    "readmeFilename": "README.md",
-    "author":  {
-        "name": "wei.gao",
-        "email": "jky239@gmail.com"
-    },
-    "contributors": [
-        "Ognian Tschakalov <ognian.tschakalov@ogi-it.com>",
-        "Simon Wade <simon.wade@gmail.com>", 
-        "Wei Gao <jky239@gmail.com>"
-    ],
-    "license": "BSD"
+  "name": "express-bunyan-logger",
+  "version": "0.1.4",
+  "description": "a bunyan logger middleware for express",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/villadora/express-bunyan-logger.git"
+  },
+  "keywords": [
+    "express",
+    "logger",
+    "bunyan"
+  ],
+  "dependencies": {
+    "bunyan": "~0.23.0",
+    "useragent": "~2.0.8"
+  },
+  "devDependencies": {
+    "through2": "^0.5.1",
+    "express": "3.x",
+    "supertest": "*",
+    "grunt": "~0.4.1",
+    "jshint": "~2.1.9",
+    "mocha": "~1.12.0",
+    "grunt-contrib-jshint": "~0.3.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-watch": "~0.3.0"
+  },
+  "readmeFilename": "README.md",
+  "author": {
+    "name": "wei.gao",
+    "email": "jky239@gmail.com"
+  },
+  "contributors": [
+    "Ognian Tschakalov <ognian.tschakalov@ogi-it.com>",
+    "Simon Wade <simon.wade@gmail.com>",
+    "Wei Gao <jky239@gmail.com>"
+  ],
+  "license": "BSD"
 }
