@@ -69,7 +69,34 @@ describe('bunyan-logger', function() {
       });
   });
 
-  it.only('test errorLogger', function(done) {
+  it('test excludes', function(done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output,
+      excludes: ['req', 'res', 'nont']
+    }));
+
+    app.get('/', function(req, res) {
+      res.send('GET /');
+    });
+    
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        var json = JSON.parse(output.content.toString());
+        assert.equal(json.name, 'express');
+        assert.equal(json.url, '/');
+        assert.equal(json['status-code'], 200);
+        assert(!json.res);
+        assert(!json.req);
+
+        done();
+      });
+  });
+
+
+  it('test errorLogger', function(done) {
     var app = express();
     var output = st();
     app.use(app.router);
@@ -111,12 +138,12 @@ describe('bunyan-logger', function() {
 
     request(app)
       .get('/')
-      .expect(function () {
+      .end(function () {
         if (!middlewareCalled) {
           throw new Error('middleware was not called');
         }
-      })
-      .end(done);
+        done();
+      });
   });
 });
 

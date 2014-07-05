@@ -15,6 +15,7 @@ module.exports.errorLogger = function (opts) {
     var logger, opts = opts || {}, format,
         immediate = false,
         parseUA = true,
+        excludes,
         levelFn = defaultLevelFn;
 
     // default format 
@@ -34,11 +35,16 @@ module.exports.errorLogger = function (opts) {
         delete opts.levelFn;
     }
 
+    if (opts.excludes) {
+        excludes = opts.excludes;
+        delete opts.excludes;
+    }
+
     return function (err, req, res, next) {
         var startTime = Date.now();
 
         function logging(incoming) {
-            if(!incoming) {
+            if (!incoming) {
                 res.removeListener('finish', logging);
                 res.removeListener('close', logging);
             }
@@ -92,6 +98,13 @@ module.exports.errorLogger = function (opts) {
             };
 
             err && (meta.err = err);
+
+            if (excludes) {
+                excludes.forEach(function(ex) {
+                  delete meta[ex];
+                });
+            }
+          
             logFn.call(logger, meta, format(meta));
         }
 

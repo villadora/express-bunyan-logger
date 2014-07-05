@@ -59,6 +59,10 @@ function(status, err /* only will work in error logger */) {
 }
 ```
 
+### options.excludes
+
+Array of string, Those fields will be excluded from meta object which passed to bunyan
+
 ### options.immediate
 
 Write log line on request instead of response (for response times)
