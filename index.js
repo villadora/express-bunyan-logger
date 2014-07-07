@@ -18,6 +18,10 @@ module.exports.errorLogger = function (opts) {
         excludes,
         levelFn = defaultLevelFn;
 
+    if (opts.logger) {
+      logger = opts.logger;
+    }
+
     // default format 
     format = opts.format || ":remote-address :incoming :method :url HTTP/:http-version :status-code :res-headers[content-length] :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os] :response-time ms";
     delete opts.format; // don't pass it to bunyan
