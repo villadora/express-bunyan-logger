@@ -96,6 +96,33 @@ describe('bunyan-logger', function() {
   });
 
 
+  it('test excludes all', function(done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output,
+      excludes: ['req', '*']
+    }));
+
+    app.get('/', function(req, res) {
+      res.send('GET /');
+    });
+    
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        var json = JSON.parse(output.content.toString());
+        assert.equal(json.name, 'express');
+        console.log(json);
+        assert(!json.url);
+        assert(!json['status-code']);
+        assert(!json.res);
+        assert(!json.req);
+
+        done();
+      });
+  });
+
   it('test errorLogger', function(done) {
     var app = express();
     var output = st();

@@ -103,19 +103,34 @@ module.exports.errorLogger = function (opts) {
 
             err && (meta.err = err);
 
+            var json = meta;
             if (excludes) {
-                excludes.forEach(function(ex) {
-                  delete meta[ex];
-                });
+                json = null;
+                if (!~excludes.indexOf('*')) {
+                    json = {};
+                    var exs = {};
+                    excludes.forEach(function(ex) {
+                        exs[ex] = true;
+                    });
+                  
+                    for (var p in meta) 
+                        if (!exs[p])
+                          json[p] = meta[p];
+                }
             }
-          
-            logFn.call(logger, meta, format(meta));
+
+            if (!json) {
+                logFn.call(logger, format(meta));
+            } else {
+                logFn.call(logger, json, format(meta));
+            }
         }
 
 
         if (immediate) {
             logging(true);
         }
+
         res.on('finish', logging);
         res.on('close', logging);
 
