@@ -1,6 +1,6 @@
 {
   "name": "express-bunyan-logger",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "a bunyan logger middleware for express",
   "main": "index.js",
   "scripts": {
@@ -16,11 +16,11 @@
     "bunyan"
   ],
   "dependencies": {
-    "bunyan": "~0.23.0",
-    "useragent": "~2.0.8"
+    "bunyan": "^1.0.0",
+    "useragent": "^2.0.9"
   },
   "devDependencies": {
-    "express": "3.x",
+    "express": "4.x",
     "grunt": "~0.4.1",
     "grunt-contrib-clean": "~0.4.0",
     "grunt-contrib-jshint": "~0.3.0",

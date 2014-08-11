@@ -126,14 +126,13 @@ describe('bunyan-logger', function() {
   it('test errorLogger', function(done) {
     var app = express();
     var output = st();
-    app.use(app.router);
-    app.use(bunyanLogger.errorLogger({
-      stream: output
-    }));
-
     app.get('/', function(req, res) {
       throw new Error();
     });
+
+    app.use(bunyanLogger.errorLogger({
+      stream: output
+    }));
 
     request(app)
       .get('/')
@@ -152,16 +151,17 @@ describe('bunyan-logger', function() {
   it('errorLogger should call next error middleware', function(done) {
     var middlewareCalled = false;
     var app = express();
-    app.use(app.router);
+
+    app.get('/', function(req, res) {
+      throw new Error();
+    });
+
     app.use(bunyanLogger.errorLogger());
     app.use(function (err, req, res, next) {
       middlewareCalled = true;
       next(err);
     });
 
-    app.get('/', function(req, res) {
-      throw new Error();
-    });
 
     request(app)
       .get('/')
