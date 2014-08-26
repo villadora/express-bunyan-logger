@@ -1,6 +1,7 @@
 var bunyan = require('bunyan'),
     useragent = require('useragent'),
-    util = require('util');
+    util = require('util'),
+    uuid = require('node-uuid');
 
 
 module.exports = function (opts) {
@@ -8,6 +9,17 @@ module.exports = function (opts) {
     return function (req, res, next) {
         logger(null, req, res, next);
     };
+};
+
+
+module.exports.childLogger = function (opts) {
+  return function(req, res, next) {
+    var app = req.app || res.app;
+    var logger = createLogger(app, opts);
+    var reqId = uuid.v1();
+    req.log = logger.child({req_id: reqId});
+    next();
+  };
 };
 
 
@@ -22,7 +34,7 @@ module.exports.errorLogger = function (opts) {
       logger = opts.logger;
     }
 
-    // default format 
+    // default format
     format = opts.format || ":remote-address :incoming :method :url HTTP/:http-version :status-code :res-headers[content-length] :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os] :response-time ms";
     delete opts.format; // don't pass it to bunyan
     (typeof format != 'function') && (format = compile(format));
@@ -65,12 +77,7 @@ module.exports.errorLogger = function (opts) {
 
 
             if (!logger) {
-                opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
-                opts.serializers = opts.serializers || {};
-                opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
-                opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
-                err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
-                logger = bunyan.createLogger(opts);
+                logger = createLogger(app, opts);
             }
 
 
@@ -112,8 +119,8 @@ module.exports.errorLogger = function (opts) {
                     excludes.forEach(function(ex) {
                         exs[ex] = true;
                     });
-                  
-                    for (var p in meta) 
+
+                    for (var p in meta)
                         if (!exs[p])
                           json[p] = meta[p];
                 }
@@ -139,6 +146,15 @@ module.exports.errorLogger = function (opts) {
     };
 };
 
+
+function createLogger(app, opts) {
+  opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
+  opts.serializers = opts.serializers || {};
+  opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
+  opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
+  opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err;
+  return bunyan.createLogger(opts);
+}
 
 function compile(fmt) {
     fmt = fmt.replace(/"/g, '\\"');
