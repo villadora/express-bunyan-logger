@@ -47,14 +47,26 @@ module.exports.errorLogger = function (opts) {
     return function (err, req, res, next) {
         var startTime = Date.now();
 
+        var app = req.app || res.app;
+
+        if (!logger) {
+            opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
+            opts.serializers = opts.serializers || {};
+            opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
+            opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
+            err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
+            logger = bunyan.createLogger(opts);
+        }
+
+        req.log = logger;
+
         function logging(incoming) {
             if (!incoming) {
                 res.removeListener('finish', logging);
                 res.removeListener('close', logging);
             }
 
-            var app = req.app || res.app,
-                status = res.statusCode,
+            var status = res.statusCode,
                 method = req.method,
                 url = req.url || '-',
                 referer = req.header('referer') || req.header('referrer') || '-',
@@ -62,17 +74,6 @@ module.exports.errorLogger = function (opts) {
                 httpVersion = req.httpVersionMajor + '.' + req.httpVersionMinor,
                 responseTime = Date.now() - startTime,
                 ip, logFn;
-
-
-            if (!logger) {
-                opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
-                opts.serializers = opts.serializers || {};
-                opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
-                opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
-                err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
-                logger = bunyan.createLogger(opts);
-            }
-
 
             var level = levelFn(status, err);
             logFn = logger[level] ? logger[level] : logger.info;
