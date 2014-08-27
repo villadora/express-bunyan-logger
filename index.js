@@ -1,5 +1,6 @@
 var bunyan = require('bunyan'),
     useragent = require('useragent'),
+    uuid = require('node-uuid'),
     util = require('util');
 
 
@@ -58,7 +59,9 @@ module.exports.errorLogger = function (opts) {
             logger = bunyan.createLogger(opts);
         }
 
-        req.log = logger;
+        var childLogger = logger.child({requestId: uuid.v4()});
+
+        req.log = childLogger;
 
         function logging(incoming) {
             if (!incoming) {
@@ -76,7 +79,7 @@ module.exports.errorLogger = function (opts) {
                 ip, logFn;
 
             var level = levelFn(status, err);
-            logFn = logger[level] ? logger[level] : logger.info;
+            logFn = childLogger[level] ? childLogger[level] : childLogger.info;
 
             ip = ip || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
@@ -121,9 +124,9 @@ module.exports.errorLogger = function (opts) {
             }
 
             if (!json) {
-                logFn.call(logger, format(meta));
+                logFn.call(childLogger, format(meta));
             } else {
-                logFn.call(logger, json, format(meta));
+                logFn.call(childLogger, json, format(meta));
             }
         }
 

@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "bunyan": "^1.0.0",
+    "node-uuid": "^1.4.1",
     "useragent": "^2.0.9"
   },
   "devDependencies": {
