@@ -59,9 +59,11 @@ module.exports.errorLogger = function (opts) {
             logger = bunyan.createLogger(opts);
         }
 
-        var childLogger = logger.child({requestId: uuid.v4()});
+        var requestId = uuid.v4();
+        var childLogger = logger.child({requestId: requestId});
 
         req.log = childLogger;
+        req.requestId = requestId;
 
         function logging(incoming) {
             if (!incoming) {
