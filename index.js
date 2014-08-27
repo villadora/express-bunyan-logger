@@ -60,10 +60,10 @@ module.exports.errorLogger = function (opts) {
         }
 
         var requestId = uuid.v4();
-        var childLogger = logger.child({requestId: requestId});
+        var childLogger = logger.child({request-id: requestId});
 
         req.log = childLogger;
-        req.requestId = requestId;
+        req.id = requestId;
 
         function logging(incoming) {
             if (!incoming) {
