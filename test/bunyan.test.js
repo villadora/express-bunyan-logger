@@ -12,7 +12,7 @@ function st(end) {
   return through(function (chunk, enc, next) {
     if(this.content)
       this.content = Buffer.concat([content, chunk]);
-    else 
+    else
       this.content = chunk;
     next();
   }, end);
@@ -28,7 +28,7 @@ describe('bunyan-logger', function() {
     app.use(bunyanLogger({
       stream: output
     }));
-    
+
     app.get('/', function(req, res) {
       res.send('GET /');
     });
@@ -36,7 +36,7 @@ describe('bunyan-logger', function() {
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
-        if(err) 
+        if(err)
           done(err);
         else {
           var json = JSON.parse(output.content.toString());
@@ -55,7 +55,7 @@ describe('bunyan-logger', function() {
     app.use(bunyanLogger({
       stream: output
     }));
-    
+
     request(app)
       .get('/missing')
       .end(function(err, res) {
@@ -80,7 +80,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -107,7 +107,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -143,7 +143,7 @@ describe('bunyan-logger', function() {
         console.log(json);
         assert.equal(json['status-code'], 500);
         assert(json.res && json.req && json.err);
-        
+
         done();
       });
   });
@@ -170,6 +170,33 @@ describe('bunyan-logger', function() {
           throw new Error('middleware was not called');
         }
         done();
+      });
+  });
+
+  it('test childLogger', function(done) {
+    var app = express();
+    var output = st();
+
+    app.use(bunyanLogger.childLogger({stream: output}));
+
+    app.get('/', function(req, res) {
+      req.log.info('test message');
+      res.send('GET /');
+    });
+
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        if(err)
+          done(err);
+        else {
+          var json = JSON.parse(output.content.toString());
+          console.log(json);
+          assert.ok(json.req_id);
+          assert.equal(json.msg, 'test message');
+          assert.equal(json.level, 30);
+          done();
+        }
       });
   });
 });
