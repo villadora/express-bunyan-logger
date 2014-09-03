@@ -1,5 +1,6 @@
 var bunyan = require('bunyan'),
     useragent = require('useragent'),
+    uuid = require('node-uuid'),
     util = require('util');
 
 
@@ -47,14 +48,30 @@ module.exports.errorLogger = function (opts) {
     return function (err, req, res, next) {
         var startTime = Date.now();
 
+        var app = req.app || res.app;
+
+        if (!logger) {
+            opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
+            opts.serializers = opts.serializers || {};
+            opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
+            opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
+            err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
+            logger = bunyan.createLogger(opts);
+        }
+
+        var requestId = uuid.v4();
+        var childLogger = logger.child({'request-id': requestId});
+
+        req.log = childLogger;
+        req.id = requestId;
+
         function logging(incoming) {
             if (!incoming) {
                 res.removeListener('finish', logging);
                 res.removeListener('close', logging);
             }
 
-            var app = req.app || res.app,
-                status = res.statusCode,
+            var status = res.statusCode,
                 method = req.method,
                 url = (req.baseUrl || '') + (req.url || '-'),
                 referer = req.header('referer') || req.header('referrer') || '-',
@@ -63,19 +80,8 @@ module.exports.errorLogger = function (opts) {
                 responseTime = Date.now() - startTime,
                 ip, logFn;
 
-
-            if (!logger) {
-                opts.name = (opts.name || app.settings.shortname || app.settings.name || app.settings.title || 'express');
-                opts.serializers = opts.serializers || {};
-                opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
-                opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
-                err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
-                logger = bunyan.createLogger(opts);
-            }
-
-
             var level = levelFn(status, err);
-            logFn = logger[level] ? logger[level] : logger.info;
+            logFn = childLogger[level] ? childLogger[level] : childLogger.info;
 
             ip = ip || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
@@ -120,9 +126,9 @@ module.exports.errorLogger = function (opts) {
             }
 
             if (!json) {
-                logFn.call(logger, format(meta));
+                logFn.call(childLogger, format(meta));
             } else {
-                logFn.call(logger, json, format(meta));
+                logFn.call(childLogger, json, format(meta));
             }
         }
 
