@@ -179,7 +179,6 @@ describe('bunyan-logger', function() {
       .expect('GET /', function(err, res) {
         var json = JSON.parse(output.content.toString());
         assert.equal(json.name, 'express');
-        console.log(json);
         assert(!json.url);
         assert(!json['status-code']);
         assert(!json.res);
@@ -206,7 +205,6 @@ describe('bunyan-logger', function() {
         var json = JSON.parse(output.content.toString());
         assert.equal(json.name, 'express');
         assert.equal(json.url, '/');
-        console.log(json);
         assert.equal(json['status-code'], 500);
         assert(json.res && json.req && json.err);
         
@@ -217,12 +215,16 @@ describe('bunyan-logger', function() {
   it('errorLogger should call next error middleware', function(done) {
     var middlewareCalled = false;
     var app = express();
+    var output = st();
 
     app.get('/', function(req, res) {
       throw new Error();
     });
 
-    app.use(bunyanLogger.errorLogger());
+    app.use(bunyanLogger.errorLogger({
+      stream: output
+    }));
+
     app.use(function (err, req, res, next) {
       middlewareCalled = true;
       next(err);
