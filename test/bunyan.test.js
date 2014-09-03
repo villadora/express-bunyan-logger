@@ -11,7 +11,7 @@ require('buffer');
 function st(end) {
   return through(function (chunk, enc, next) {
     if(this.content)
-      this.content = Buffer.concat([content, chunk]);
+      this.content = Buffer.concat([this.content, chunk]);
     else 
       this.content = chunk;
     next();
@@ -68,6 +68,72 @@ describe('bunyan-logger', function() {
         done();
       });
   });
+
+  it('test request id', function(done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output
+    }));
+
+    app.use(function(req, res, next) {
+      req.log.info('middleware');
+      next();
+    });
+
+    app.get('/', function(req, res) {
+      res.send('GET /');
+    });
+    
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        var lines = output.content.toString().split('\n');
+        assert.equal(lines.length, 3);
+        assert.equal(lines[2], '');
+
+        var json = JSON.parse(lines[0]);
+        assert.equal(json.name, 'express');
+        assert(json.req_id);
+        var req_id = json.req_id;
+        assert.equal(json.msg, 'middleware');
+
+        json = JSON.parse(lines[1]);
+        assert.equal(json.url, '/');
+        assert(json.req_id);
+        assert.equal(json.req_id, req_id);
+
+        done();
+      });
+  });
+
+
+  it('test options.genReqId', function(done) {
+    var app = express();
+    var output = st();
+    var id = 0;
+    app.use(bunyanLogger({
+      stream: output,
+      genReqId: function(req) {
+        return id++;
+      }
+    }));
+
+    app.get('/', function(req, res) {
+      res.send('GET /');
+    });
+    
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        var json = JSON.parse(output.content.toString());
+        assert.equal(json.name, 'express');
+        assert.equal(json.req_id, 0);
+
+        done();
+      });
+  });
+
 
   it('test excludes', function(done) {
     var app = express();

@@ -1,6 +1,6 @@
 {
   "name": "express-bunyan-logger",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a bunyan logger middleware for express",
   "main": "index.js",
   "scripts": {
@@ -38,9 +38,10 @@
     "email": "jky239@gmail.com"
   },
   "contributors": [
+    "Wei Gao <jky239@gmail.com>",
+    "Paris Holley <mail@parisholley.com>",
     "Ognian Tschakalov <ognian.tschakalov@ogi-it.com>",
-    "Simon Wade <simon.wade@gmail.com>",
-    "Wei Gao <jky239@gmail.com>"
+    "Simon Wade <simon.wade@gmail.com>"
   ],
   "license": "BSD"
 }

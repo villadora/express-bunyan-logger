@@ -34,7 +34,16 @@ Change default format:
     app.use(require('express-bunyan-logger')({
         format: ":remote-address - :user-agent[major] custom logger"
     });
-    
+
+And a child logger will be attached to each request object:
+
+```javascript
+app.use(require('express-bunyan-logger')();
+app.use(function(req, res, next) {
+    req.log.debug('this is debug in middleware');
+    next();
+});
+```
 
 ## Configuration
 
@@ -66,6 +75,22 @@ Array of string, Those fields will be excluded from meta object which passed to 
 ### options.immediate
 
 Write log line on request instead of response (for response times)
+
+### optiosn.genReqId
+
+By default, `express-bunyan-logger` will generate an unique id for each request, and a field 'req_id' will be added to child logger in `request` object.
+
+If you have already use other middleware/framework to generate request id, you can pass a function to retrieve it:
+
+```javascript
+// suppose connect-requestid middleware is already added.
+app.use(require('express-bunyan-logger')({
+    genReqId: function(req) {
+       return req.id;
+    }
+});
+```
+
 
 ## License
 

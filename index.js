@@ -17,6 +17,7 @@ module.exports.errorLogger = function (opts) {
         immediate = false,
         parseUA = true,
         excludes,
+        genReqId = defaultGenReqId,
         levelFn = defaultLevelFn;
 
     if (opts.logger) {
@@ -45,6 +46,13 @@ module.exports.errorLogger = function (opts) {
         delete opts.excludes;
     }
 
+
+    if (opts.genReqId) {
+        genReqId = typeof genReqId == 'function' ? opts.genReqId : defaultGenReqId;
+    }else if (opts.hasOwnProperty('genReqId')) {
+        genReqId = false;
+    }
+
     return function (err, req, res, next) {
         var startTime = Date.now();
 
@@ -55,15 +63,17 @@ module.exports.errorLogger = function (opts) {
             opts.serializers = opts.serializers || {};
             opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
             opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
-            err && ( opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
+            err && (opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
             logger = bunyan.createLogger(opts);
         }
 
-        var requestId = uuid.v4();
-        var childLogger = logger.child({'request-id': requestId});
+        var requestId;
 
+        if (genReqId) 
+          requestId = genReqId(req);
+
+        var childLogger = requestId !== undefined ? logger.child({req_id: requestId}) : logger;
         req.log = childLogger;
-        req.id = requestId;
 
         function logging(incoming) {
             if (!incoming) {
@@ -164,4 +174,12 @@ function defaultLevelFn(status, err) {
         return "warn";
     }
     return "info";
+}
+
+
+
+function defaultGenReqId(req) {
+  var requestId = uuid.v4();
+  req.id = requestId;
+  return requestId;
 }
