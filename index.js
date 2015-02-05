@@ -54,7 +54,7 @@ module.exports.errorLogger = function (opts) {
     }
 
     return function (err, req, res, next) {
-        var startTime = Date.now();
+        var startTime = process.hrtime();
 
         var app = req.app || res.app;
 
@@ -87,7 +87,8 @@ module.exports.errorLogger = function (opts) {
                 referer = req.header('referer') || req.header('referrer') || '-',
                 ua = parseUA ? useragent.parse(req.header('user-agent')) : req.header('user-agent'),
                 httpVersion = req.httpVersionMajor + '.' + req.httpVersionMinor,
-                responseTime = Date.now() - startTime,
+                hrtime = process.hrtime(startTime),
+                responseTime = hrtime[0] * 1e3 + hrtime[1] / 1e6,
                 ip, logFn;
 
             var level = levelFn(status, err);
@@ -109,6 +110,7 @@ module.exports.errorLogger = function (opts) {
                 'short-body': util.inspect(req.body).substring(0, 20),
                 'http-version': httpVersion,
                 'response-time': responseTime,
+                "response-hrtime": hrtime,
                 "status-code": status,
                 'req-headers': req.headers,
                 'res-headers': res._headers,

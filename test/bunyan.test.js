@@ -102,7 +102,6 @@ describe('bunyan-logger', function() {
         assert.equal(json.url, '/');
         assert(json.req_id);
         assert.equal(json.req_id, req_id);
-
         done();
       });
   });
