@@ -76,7 +76,7 @@ Array of string, Those fields will be excluded from meta object which passed to 
 
 Write log line on request instead of response (for response times)
 
-### optiosn.genReqId
+### options.genReqId
 
 By default, `express-bunyan-logger` will generate an unique id for each request, and a field 'req_id' will be added to child logger in `request` object.
 
