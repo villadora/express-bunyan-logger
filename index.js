@@ -96,7 +96,7 @@ module.exports.errorLogger = function (opts) {
 
             ip = ip || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
-                (req.socket.socket && req.socket.socket.remoteAddresss) ||
+                (req.socket.socket && req.socket.socket.remoteAddress) ||
                 '127.0.0.1';
 
             var meta = {
