@@ -59,12 +59,16 @@ Whether to parse _user-agent_ in logger, default is =true=.
 
 ### options.levelFn
 
-Function that translate statusCode into log level.
+Function that translate statusCode into log level. The `meta` argument is an object consisting of all the fields gathered by bunyan-express-logger, before exclusions are applied. 
 
 ```
-function(status, err /* only will work in error logger */) {
+function(status, err /* only will work in error logger */, meta) {
      // return string of level
-     return "info";
+     if (meta["response-time"] > 30000) {
+         return "fatal";
+     } else {
+         return "info";
+     }
 }
 ```
 
