@@ -68,6 +68,21 @@ function(status, err /* only will work in error logger */) {
 }
 ```
 
+### options.includesFn
+
+Function that is passed `req` and `res`, and returns an object whose properties will be added to the meta object passed to bunyan
+
+```javascript
+function(req, res) {
+    if (req.user) {
+        return {
+            _id: req.user._id,
+            name: req.user.name
+        }
+    }
+}
+```
+
 ### options.excludes
 
 Array of string, Those fields will be excluded from meta object which passed to bunyan

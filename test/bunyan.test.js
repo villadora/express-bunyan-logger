@@ -239,6 +239,35 @@ describe('bunyan-logger', function() {
         done();
       });
   });
+
+  it('test options.includesFn', function (done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output,
+      includesFn: function (req, res) {
+        return {
+          user: {
+            name: 'Eric',
+            _id: '546f80240a186fd6181472a9'
+          }
+        };
+      }
+    }));
+
+    app.get('/', function (req, res) {
+      res.send('GET /');
+    });
+
+    request(app)
+        .get('/')
+        .expect('user property to be present in log', function (err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert(json.user);
+          assert.equal(json.user.name, 'Eric');
+          done();
+        });
+  });
 });
 
 

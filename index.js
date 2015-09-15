@@ -18,7 +18,8 @@ module.exports.errorLogger = function (opts) {
         parseUA = true,
         excludes,
         genReqId = defaultGenReqId,
-        levelFn = defaultLevelFn;
+        levelFn = defaultLevelFn,
+        includesFn;
 
     if (opts.logger) {
       logger = opts.logger;
@@ -44,6 +45,11 @@ module.exports.errorLogger = function (opts) {
     if (opts.excludes) {
         excludes = opts.excludes;
         delete opts.excludes;
+    }
+
+    if (opts.includesFn) {
+        includesFn = opts.includesFn;
+        delete opts.includesFn;
     }
 
 
@@ -134,6 +140,16 @@ module.exports.errorLogger = function (opts) {
                     for (var p in meta) 
                         if (!exs[p])
                           json[p] = meta[p];
+                }
+            }
+
+            if (includesFn) {
+                var includes = includesFn(req, res);
+
+                if (includes) {
+                    for (var p in includes) {
+                        json[p] = includes[p];
+                    }
                 }
             }
 
