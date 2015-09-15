@@ -5,6 +5,10 @@ A express logger middleware powered by [bunyan](https://github.com/trentm/node-b
 [![Build Status](https://travis-ci.org/villadora/express-bunyan-logger.svg?branch=master)](https://travis-ci.org/villadora/express-bunyan-logger) [![dependencies](https://david-dm.org/villadora/express-bunyan-logger.svg)](https://david-dm.org/villadora/express-bunyan-logger)
 
 
+## Note
+
+This year as work content change, I have no spare time to maintaining the node modules, if anyone want to take or keep maintaining, just contact me via jky239@gmail.com with Title contains: "Wanted: npm package xxxx". Thx.
+
 ## Installation
 
     npm install express-bunyan-logger
