@@ -163,11 +163,10 @@ module.exports.errorLogger = function (opts) {
 
         if (immediate) {
             logging(true);
+        } else {
+            res.on('finish', logging);
+            res.on('close', logging);
         }
-
-        res.on('finish', logging);
-        res.on('close', logging);
-
 
         next(err);
     };
