@@ -91,6 +91,18 @@ function(req, res) {
 
 Array of string, Those fields will be excluded from meta object which passed to bunyan
 
+### options.serializers
+
+An object of [bunyan serializers](https://github.com/trentm/node-bunyan#serializers). They are passed on to bunyan.
+The default serializers are defined as follows:
+```
+{
+    req: bunyan.stdSerializers.req,
+    res: bunyan.stdSerializers.res,
+    err: bunyan.stdSerializers.err
+}
+```
+
 ### options.immediate
 
 Write log line on request instead of response (for response times)
