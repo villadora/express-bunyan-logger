@@ -97,9 +97,6 @@ module.exports.errorLogger = function (opts) {
                 responseTime = hrtime[0] * 1e3 + hrtime[1] / 1e6,
                 ip, logFn;
 
-            var level = levelFn(status, err);
-            logFn = childLogger[level] ? childLogger[level] : childLogger.info;
-
             ip = ip || req.ip || req.connection.remoteAddress ||
                 (req.socket && req.socket.remoteAddress) ||
                 (req.socket.socket && req.socket.socket.remoteAddress) ||
@@ -126,6 +123,9 @@ module.exports.errorLogger = function (opts) {
             };
 
             err && (meta.err = err);
+
+            var level = levelFn(status, err, meta);
+            logFn = childLogger[level] ? childLogger[level] : childLogger.info;
 
             var json = meta;
             if (excludes) {

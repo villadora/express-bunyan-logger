@@ -268,6 +268,31 @@ describe('bunyan-logger', function() {
           done();
         });
   });
+
+  it('test options.levelFn', function (done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output,
+      levelFn: function (status, err, meta) {
+        if (meta && meta['response-time'] !== undefined) {
+          return 'fatal';
+        }
+      }
+    }));
+
+    app.get('/', function (req, res) {
+      res.send('GET /');
+    });
+
+    request(app)
+        .get('/')
+        .expect('error level fatal', function (err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.level, 60);
+          done();
+        });
+  });
 });
 
 
