@@ -3,6 +3,7 @@ var assert = require('assert');
 var request = require('supertest');
 var through = require('through2');
 var bunyanLogger = require('../');
+var util = require('util');
 
 
 require('buffer');
@@ -192,7 +193,11 @@ describe('bunyan-logger', function() {
             assert.equal(json['status-code'], 200);
 
             assert(json['short-body']);
-            assert.equal(json['short-body'], "{ p: '[HIDDEN]'}");
+
+            // We specifically chose a short key here to ensure our test was valid
+            // If there were multiple keys, there's a chance it won't appear
+            expected = util.inspect({p: '[HIDDEN]'}).substring(0, 20);
+            assert.equal(json['short-body'], expected);
 
             done();
           });
