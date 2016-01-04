@@ -1,5 +1,5 @@
 var bunyan = require('bunyan'),
-    get = require('lodash.get'),
+    has = require('lodash.has'),
     set = require('lodash.set'),
     useragent = require('useragent'),
     uuid = require('node-uuid'),
@@ -167,7 +167,7 @@ module.exports.errorLogger = function (opts) {
             if (obfuscate) {
               for(var i in obfuscate) {
                 var key = obfuscate[i];
-                if (get(json, key)) {
+                if (has(json, key)) {
                   set(json, key, obfuscatePlaceholder);
                 }
               }

@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "bunyan": "^1.0.0",
-    "lodash.get": "^3.7.0",
+    "lodash.has": "^3.2.1",
     "lodash.set": "^3.7.4",
     "node-uuid": "^1.4.1",
     "useragent": "^2.0.9"
