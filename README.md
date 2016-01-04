@@ -12,10 +12,10 @@ This year as work content change, I have no spare time to maintaining the node m
 ## Installation
 
     npm install express-bunyan-logger
-   
+
 ## Usage
 
-To use the logger: 
+To use the logger:
 
     app.use(require('express-bunyan-logger')());
 
@@ -26,7 +26,7 @@ To use the errorLogger:
 And you can also pass bunyan logger options to the logger middleware:
 
     app.use(require('express-bunyan-logger')({
-        name: 'logger', 
+        name: 'logger',
         streams: [{
             level: 'info',
             stream: process.stdout
@@ -63,7 +63,7 @@ Whether to parse _user-agent_ in logger, default is =true=.
 
 ### options.levelFn
 
-Function that translate statusCode into log level. The `meta` argument is an object consisting of all the fields gathered by bunyan-express-logger, before exclusions are applied. 
+Function that translate statusCode into log level. The `meta` argument is an object consisting of all the fields gathered by bunyan-express-logger, before exclusions are applied.
 
 ```
 function(status, err /* only will work in error logger */, meta) {
@@ -94,6 +94,17 @@ function(req, res) {
 ### options.excludes
 
 Array of string, Those fields will be excluded from meta object which passed to bunyan
+
+### options.obfuscate
+Array of strings to obfuscate.
+These strings can be in dotted notation, for instance `body.password`, and it will only replace that specific value.
+This will replace the values in log messages with a [placeholder](#optionsobfuscateplaceholder).
+
+### options.obfuscatePlaceholder
+
+Placeholder to use when obfuscating values.
+This is only applicable when there are values to obfuscate.
+Default is `[HIDDEN]`.
 
 ### options.serializers
 
