@@ -172,6 +172,36 @@ describe('bunyan-logger', function() {
         });
     });
 
+    it('uses custom placeholder', function(done) {
+      var PLACEHOLDER = 'AAAAAA';
+
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.password'],
+        obfuscatePlaceholder: PLACEHOLDER
+      }));
+
+      app.post('/', function(req, res) {
+        res.send('POST /');
+      });
+
+      request(app)
+        .post('/')
+        .send({username: USERNAME, password: PASSWORD})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
+
+          assert(json.body);
+          assert.equal(json.body.username, USERNAME);
+          assert.equal(json.body.password, PLACEHOLDER);
+
+          done();
+        });
+    });
+
     it('obfuscates short-body', function(done) {
       app.use(bunyanLogger({
         stream: output,
