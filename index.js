@@ -1,4 +1,6 @@
 var bunyan = require('bunyan'),
+    get = require('lodash.get'),
+    set = require('lodash.set'),
     useragent = require('useragent'),
     uuid = require('node-uuid'),
     util = require('util');
@@ -17,6 +19,8 @@ module.exports.errorLogger = function (opts) {
         immediate = false,
         parseUA = true,
         excludes,
+        obfuscate,
+        obfuscatePlaceholder,
         genReqId = defaultGenReqId,
         levelFn = defaultLevelFn,
         includesFn;
@@ -25,7 +29,7 @@ module.exports.errorLogger = function (opts) {
       logger = opts.logger;
     }
 
-    // default format 
+    // default format
     format = opts.format || ":remote-address :incoming :method :url HTTP/:http-version :status-code :res-headers[content-length] :referer :user-agent[family] :user-agent[major].:user-agent[minor] :user-agent[os] :response-time ms";
     delete opts.format; // don't pass it to bunyan
     (typeof format != 'function') && (format = compile(format));
@@ -45,6 +49,13 @@ module.exports.errorLogger = function (opts) {
     if (opts.excludes) {
         excludes = opts.excludes;
         delete opts.excludes;
+    }
+
+    if (opts.obfuscate) {
+        obfuscate = opts.obfuscate;
+        obfuscatePlaceholder = opts.obfuscatePlaceholder || '[HIDDEN]';
+        delete opts.obfuscate;
+        delete opts.obfuscatePlaceholder;
     }
 
     if (opts.includesFn) {
@@ -75,7 +86,7 @@ module.exports.errorLogger = function (opts) {
 
         var requestId;
 
-        if (genReqId) 
+        if (genReqId)
           requestId = genReqId(req);
 
         var childLogger = requestId !== undefined ? logger.child({req_id: requestId}) : logger;
@@ -136,8 +147,8 @@ module.exports.errorLogger = function (opts) {
                     excludes.forEach(function(ex) {
                         exs[ex] = true;
                     });
-                  
-                    for (var p in meta) 
+
+                    for (var p in meta)
                         if (!exs[p])
                           json[p] = meta[p];
                 }
@@ -151,6 +162,15 @@ module.exports.errorLogger = function (opts) {
                         json[p] = includes[p];
                     }
                 }
+            }
+
+            if (obfuscate) {
+              for(var i in obfuscate) {
+                var key = obfuscate[i];
+                if (get(json, key)) {
+                  set(json, key, obfuscatePlaceholder);
+                }
+              }
             }
 
             if (!json) {
