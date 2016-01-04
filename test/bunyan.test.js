@@ -145,63 +145,61 @@ describe('bunyan-logger', function() {
       output = st();
     });
 
-    describe('POST', function() {
-      it('obfuscates body', function(done) {
-        app.use(bunyanLogger({
-          stream: output,
-          obfuscate: ['req.body.password']
-        }));
+    it('obfuscates body', function(done) {
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.password']
+      }));
 
-        app.post('/', function(req, res) {
-          res.send('POST /');
-        });
-
-        request(app)
-          .post('/')
-          .send({username: USERNAME, password: PASSWORD})
-          .expect('POST /', function(err, res) {
-            var json = JSON.parse(output.content.toString());
-            assert.equal(json.name, 'express');
-            assert.equal(json.url, '/');
-            assert.equal(json['status-code'], 200);
-
-            assert(json.body);
-            assert.equal(json.body.username, USERNAME);
-            assert.equal(json.body.password, '[HIDDEN]');
-
-            done();
-          });
+      app.post('/', function(req, res) {
+        res.send('POST /');
       });
 
-      it('obfuscates short-body', function(done) {
-        app.use(bunyanLogger({
-          stream: output,
-          obfuscate: ['req.body.p']
-        }));
+      request(app)
+        .post('/')
+        .send({username: USERNAME, password: PASSWORD})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
 
-        app.post('/', function(req, res) {
-          res.send('POST /');
+          assert(json.body);
+          assert.equal(json.body.username, USERNAME);
+          assert.equal(json.body.password, '[HIDDEN]');
+
+          done();
         });
+    });
 
-        request(app)
-          .post('/')
-          .send({p: 'MY_PASSWORD'})
-          .expect('POST /', function(err, res) {
-            var json = JSON.parse(output.content.toString());
-            assert.equal(json.name, 'express');
-            assert.equal(json.url, '/');
-            assert.equal(json['status-code'], 200);
+    it('obfuscates short-body', function(done) {
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.p']
+      }));
 
-            assert(json['short-body']);
-
-            // We specifically chose a short key here to ensure our test was valid
-            // If there were multiple keys, there's a chance it won't appear
-            expected = util.inspect({p: '[HIDDEN]'}).substring(0, 20);
-            assert.equal(json['short-body'], expected);
-
-            done();
-          });
+      app.post('/', function(req, res) {
+        res.send('POST /');
       });
+
+      request(app)
+        .post('/')
+        .send({p: 'MY_PASSWORD'})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
+
+          assert(json['short-body']);
+
+          // We specifically chose a short key here to ensure our test was valid
+          // If there were multiple keys, there's a chance it won't appear
+          expected = util.inspect({p: '[HIDDEN]'}).substring(0, 20);
+          assert.equal(json['short-body'], expected);
+
+          done();
+        });
     });
   });
 
