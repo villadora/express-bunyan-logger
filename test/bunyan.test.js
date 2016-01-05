@@ -134,7 +134,7 @@ describe('bunyan-logger', function() {
       });
   });
 
-  describe.only('test obfuscate', function() {
+  describe('test obfuscate', function() {
     var app, output,
         USERNAME = 'MY_USER',
         PASSWORD = 'MY_PASSWORD';
