@@ -3,6 +3,7 @@ var assert = require('assert');
 var request = require('supertest');
 var through = require('through2');
 var bunyanLogger = require('../');
+var util = require('util');
 
 
 require('buffer');
@@ -12,7 +13,7 @@ function st(end) {
   return through(function (chunk, enc, next) {
     if(this.content)
       this.content = Buffer.concat([this.content, chunk]);
-    else 
+    else
       this.content = chunk;
     next();
   }, end);
@@ -28,7 +29,7 @@ describe('bunyan-logger', function() {
     app.use(bunyanLogger({
       stream: output
     }));
-    
+
     app.get('/', function(req, res) {
       res.send('GET /');
     });
@@ -36,7 +37,7 @@ describe('bunyan-logger', function() {
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
-        if(err) 
+        if(err)
           done(err);
         else {
           var json = JSON.parse(output.content.toString());
@@ -55,7 +56,7 @@ describe('bunyan-logger', function() {
     app.use(bunyanLogger({
       stream: output
     }));
-    
+
     request(app)
       .get('/missing')
       .end(function(err, res) {
@@ -84,7 +85,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -121,7 +122,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -133,6 +134,104 @@ describe('bunyan-logger', function() {
       });
   });
 
+  describe('test obfuscate', function() {
+    var app, output,
+        USERNAME = 'MY_USER',
+        PASSWORD = 'MY_PASSWORD';
+
+    beforeEach(function() {
+      app = express();
+      app.use(require('body-parser').json());
+      output = st();
+    });
+
+    it('obfuscates body', function(done) {
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.password']
+      }));
+
+      app.post('/', function(req, res) {
+        res.send('POST /');
+      });
+
+      request(app)
+        .post('/')
+        .send({username: USERNAME, password: PASSWORD})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
+
+          assert(json.body);
+          assert.equal(json.body.username, USERNAME);
+          assert.equal(json.body.password, '[HIDDEN]');
+
+          done();
+        });
+    });
+
+    it('uses custom placeholder', function(done) {
+      var PLACEHOLDER = 'AAAAAA';
+
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.password'],
+        obfuscatePlaceholder: PLACEHOLDER
+      }));
+
+      app.post('/', function(req, res) {
+        res.send('POST /');
+      });
+
+      request(app)
+        .post('/')
+        .send({username: USERNAME, password: PASSWORD})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
+
+          assert(json.body);
+          assert.equal(json.body.username, USERNAME);
+          assert.equal(json.body.password, PLACEHOLDER);
+
+          done();
+        });
+    });
+
+    it('obfuscates short-body', function(done) {
+      app.use(bunyanLogger({
+        stream: output,
+        obfuscate: ['req.body.p']
+      }));
+
+      app.post('/', function(req, res) {
+        res.send('POST /');
+      });
+
+      request(app)
+        .post('/')
+        .send({p: 'MY_PASSWORD'})
+        .expect('POST /', function(err, res) {
+          var json = JSON.parse(output.content.toString());
+          assert.equal(json.name, 'express');
+          assert.equal(json.url, '/');
+          assert.equal(json['status-code'], 200);
+
+          assert(json['short-body']);
+
+          // We specifically chose a short key here to ensure our test was valid
+          // If there were multiple keys, there's a chance it won't appear
+          expected = util.inspect({p: '[HIDDEN]'}).substring(0, 20);
+          assert.equal(json['short-body'], expected);
+
+          done();
+        });
+    });
+  });
 
   it('test excludes', function(done) {
     var app = express();
@@ -145,7 +244,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -172,7 +271,7 @@ describe('bunyan-logger', function() {
     app.get('/', function(req, res) {
       res.send('GET /');
     });
-    
+
     request(app)
       .get('/')
       .expect('GET /', function(err, res) {
@@ -206,7 +305,7 @@ describe('bunyan-logger', function() {
         assert.equal(json.url, '/');
         assert.equal(json['status-code'], 500);
         assert(json.res && json.req && json.err);
-        
+
         done();
       });
   });
@@ -294,5 +393,3 @@ describe('bunyan-logger', function() {
         });
   });
 });
-
-

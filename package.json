@@ -18,10 +18,13 @@
   ],
   "dependencies": {
     "bunyan": "^1.0.0",
+    "lodash.has": "^3.2.1",
+    "lodash.set": "^3.7.4",
     "node-uuid": "^1.4.1",
     "useragent": "^2.0.9"
   },
   "devDependencies": {
+    "body-parser": "^1.14.2",
     "express": "4.x",
     "jshint": "~2.1.9",
     "mocha": "~1.12.0",
