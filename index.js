@@ -121,7 +121,7 @@ module.exports.errorLogger = function (opts) {
                 'referer': referer,
                 'user-agent': ua,
                 'body': req.body,
-                'short-body': util.inspect(req.body).substring(0, 20),
+                'short-body': undefined,
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "response-hrtime": hrtime,
