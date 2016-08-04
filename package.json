@@ -17,19 +17,19 @@
     "bunyan"
   ],
   "dependencies": {
-    "bunyan": "^1.0.0",
-    "lodash.has": "^3.2.1",
-    "lodash.set": "^3.7.4",
+    "bunyan": "^1.8.1",
+    "lodash.has": "^4.5.1",
+    "lodash.set": "^4.3.1",
     "node-uuid": "^1.4.7",
-    "useragent": "^2.0.9"
+    "useragent": "^2.1.9"
   },
   "devDependencies": {
-    "body-parser": "^1.14.2",
-    "express": "4.x",
-    "jshint": "~2.1.9",
-    "mocha": "~1.12.0",
-    "supertest": "*",
-    "through2": "^0.5.1"
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "jshint": "^2.9.2",
+    "mocha": "^3.0.1",
+    "supertest": "^2.0.0",
+    "through2": "^2.0.1"
   },
   "readmeFilename": "README.md",
   "author": {
