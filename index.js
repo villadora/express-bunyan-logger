@@ -2,7 +2,7 @@ var bunyan = require('bunyan'),
     has = require('lodash.has'),
     set = require('lodash.set'),
     useragent = require('useragent'),
-    uuid = require('node-uuid'),
+    uuid = require('uuid'),
     util = require('util');
 
 
