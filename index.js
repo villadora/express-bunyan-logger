@@ -139,7 +139,10 @@ module.exports.errorLogger = function (opts) {
             logFn = childLogger[level] ? childLogger[level] : childLogger.info;
 
             var json = meta;
-            if (excludes) {
+            if (excludes && !util.isArray(excludes)) {
+                json = deepExclude(excludes, meta);
+            }
+            else {
                 json = null;
                 if (!~excludes.indexOf('*')) {
                     json = {};
@@ -198,6 +201,33 @@ module.exports.errorLogger = function (opts) {
     };
 };
 
+function deepExclude(excludes, meta) {
+
+    json = meta;
+    for(var q in excludes) {
+
+        if (!util.isArray(excludes[q])) {
+            json = deepExclude(excludes[q], meta[q]);
+        }
+        else {
+            jsub = null;
+            if (!~excludes[q].indexOf('*')) {
+                jsub = {};
+                var exs = {};
+                excludes[q].forEach(function(ex) {
+                    exs[ex] = true;
+                });
+                for (var p in meta[q]) {
+                    if (!exs[p]) {
+                      jsub[p] = meta[q][p];
+                    }
+                }
+            }
+            json[q] = jsub;
+        }
+    }
+    return json;
+}
 
 function compile(fmt) {
     fmt = fmt.replace(/"/g, '\\"');
