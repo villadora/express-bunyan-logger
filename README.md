@@ -58,6 +58,10 @@ app.use(function(req, res, next) {
 
 ## Configuration
 
+### options.logger
+
+A custom instance of `bunyan` logger to use in the middware. Useful if you already do all of the logging with `bunyan` and don't want this middleware to create a new unconfigured instance. Also useful if you want to pass a child logger into this middleware.
+
 ### options.format
 
 Format string, please go the source code to the metadata. ":name" will print out meta.name; ":name[key]" will print out the property 'key' of meta.name.
