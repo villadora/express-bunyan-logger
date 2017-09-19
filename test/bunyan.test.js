@@ -259,6 +259,34 @@ describe('bunyan-logger', function() {
       });
   });
 
+  it('test excludes short-body', function(done) {
+    var app = express();
+    var output = st();
+
+    app.use(require('body-parser').json());
+
+    app.use(bunyanLogger({
+      stream: output,
+      excludes: ['short-body']
+    }));
+
+    app.post('/', function(req, res) {
+      res.send('POST /');
+    });
+
+    request(app)
+      .post('/')
+      .send("content")
+      .expect('POST /', function(err, res) {
+        var json = JSON.parse(output.content.toString());
+        assert.equal(json.name, 'express');
+        assert.equal(json.url, '/');
+        assert.equal(json['status-code'], 200);
+        assert(json.body);
+        assert(!json['short-body']);
+        done();
+      });
+  });
 
   it('test excludes all', function(done) {
     var app = express();
