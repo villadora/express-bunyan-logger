@@ -17,11 +17,11 @@
     "bunyan"
   ],
   "dependencies": {
-    "bunyan": "^1.8.1",
-    "lodash.has": "^4.5.1",
-    "lodash.set": "^4.3.1",
-    "useragent": "^2.1.9",
-    "uuid": "^3.0.0"
+    "bunyan": "^1.8.12",
+    "lodash.has": "^4.5.2",
+    "lodash.set": "^4.3.2",
+    "useragent": "^2.2.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "body-parser": "^1.15.2",
