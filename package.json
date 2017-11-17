@@ -4,8 +4,8 @@
   "description": "a bunyan logger middleware for express",
   "main": "index.js",
   "scripts": {
-    "lint": "./node_modules/.bin/jshint index.js test/*.js",
-    "test": "npm run lint && ./node_modules/.bin/mocha -R spec"
+    "lint": "jshint index.js test/*.js",
+    "test": "npm run lint && mocha -R spec"
   },
   "repository": {
     "type": "git",
