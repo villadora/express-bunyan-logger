@@ -17,28 +17,35 @@ This year as work content change, I have no spare time to maintaining the node m
 
 To use the logger:
 
-    app.use(require('express-bunyan-logger')());
+```javascript
+app.use(require('express-bunyan-logger')());
+```
 
 To use the errorLogger:
 
-    app.use(require('express-bunyan-logger').errorLogger());
+```javascript
+app.use(require('express-bunyan-logger').errorLogger());
+```
 
 And you can also pass bunyan logger options to the logger middleware:
 
-    app.use(require('express-bunyan-logger')({
-        name: 'logger',
-        streams: [{
-            level: 'info',
-            stream: process.stdout
-            }]
-        }));
+```javascript
+app.use(require('express-bunyan-logger')({
+    name: 'logger',
+    streams: [{
+        level: 'info',
+        stream: process.stdout
+    }]
+}));
+```
 
 Change default format:
 
-    app.use(require('express-bunyan-logger')({
-        format: ":remote-address - :user-agent[major] custom logger"
-    });
-
+```javascript
+app.use(require('express-bunyan-logger')({
+    format: ":remote-address - :user-agent[major] custom logger"
+});
+```
 And a child logger will be attached to each request object:
 
 ```javascript
@@ -65,7 +72,7 @@ Whether to parse _user-agent_ in logger, default is =true=.
 
 Function that translate statusCode into log level. The `meta` argument is an object consisting of all the fields gathered by bunyan-express-logger, before exclusions are applied.
 
-```
+```javascript
 function(status, err /* only will work in error logger */, meta) {
      // return string of level
      if (meta["response-time"] > 30000) {
@@ -110,7 +117,8 @@ Default is `[HIDDEN]`.
 
 An object of [bunyan serializers](https://github.com/trentm/node-bunyan#serializers). They are passed on to bunyan.
 The default serializers are defined as follows:
-```
+
+```javascript
 {
     req: bunyan.stdSerializers.req,
     res: bunyan.stdSerializers.res,
