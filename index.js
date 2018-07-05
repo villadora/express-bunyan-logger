@@ -22,6 +22,7 @@ module.exports.errorLogger = function (opts) {
         obfuscate,
         obfuscatePlaceholder,
         genReqId = defaultGenReqId,
+        reqId = 'req_id',
         levelFn = defaultLevelFn,
         includesFn;
 
@@ -66,8 +67,14 @@ module.exports.errorLogger = function (opts) {
 
     if (opts.genReqId) {
         genReqId = typeof genReqId == 'function' ? opts.genReqId : defaultGenReqId;
+
     }else if (opts.hasOwnProperty('genReqId')) {
         genReqId = false;
+    }
+
+    if (opts.reqId) {
+        reqId = opts.reqId;
+        delete opts.reqId;
     }
 
     return function (err, req, res, next) {
@@ -85,11 +92,14 @@ module.exports.errorLogger = function (opts) {
         }
 
         var requestId;
+        var loggerConfig = Object.create(null);
 
-        if (genReqId)
+        if (genReqId) {
           requestId = genReqId(req);
+          loggerConfig[reqId] = requestId;
+        }
 
-        var childLogger = requestId !== undefined ? logger.child({req_id: requestId}) : logger;
+        var childLogger = requestId !== undefined ? logger.child(loggerConfig) : logger;
         req.log = childLogger;
 
         function logging(incoming) {

@@ -107,6 +107,43 @@ describe('bunyan-logger', function() {
       });
   });
 
+  it('test request id rename', function(done) {
+    var app = express();
+    var output = st();
+    app.use(bunyanLogger({
+      stream: output,
+      reqId: 'requestIdentifier'
+    }));
+
+    app.use(function(req, res, next) {
+      req.log.info('middleware');
+      next();
+    });
+
+    app.get('/', function(req, res) {
+      res.send('GET /');
+    });
+
+    request(app)
+      .get('/')
+      .expect('GET /', function(err, res) {
+        var lines = output.content.toString().split('\n');
+        assert.equal(lines.length, 3);
+        assert.equal(lines[2], '');
+
+        var json = JSON.parse(lines[0]);
+        assert.equal(json.name, 'express');
+        assert(json.requestIdentifier);
+        var requestIdentifier = json.requestIdentifier;
+        assert.equal(json.msg, 'middleware');
+
+        json = JSON.parse(lines[1]);
+        assert.equal(json.url, '/');
+        assert(json.requestIdentifier);
+        assert.equal(json.requestIdentifier, requestIdentifier);
+        done();
+      });
+  });
 
   it('test options.genReqId', function(done) {
     var app = express();

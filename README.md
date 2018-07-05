@@ -145,6 +145,17 @@ app.use(require('express-bunyan-logger')({
 });
 ```
 
+If you don't want the ID to be saved as `req_id` in the logger, you can supply an alternative name through `options.reqId`:
+
+```javascript
+app.use(require('express-bunyan-logger')({
+    genReqId: function(req) {
+       return req.id;
+    },
+    reqId: 'requestId'
+});
+```
+
 
 ## License
 
