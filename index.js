@@ -121,7 +121,7 @@ module.exports.errorLogger = function (opts) {
                 'referer': referer,
                 'user-agent': ua,
                 'body': req.body,
-                'short-body': undefined,
+                'short-body': true,
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "response-hrtime": hrtime,
@@ -175,7 +175,7 @@ module.exports.errorLogger = function (opts) {
             }
 
             // Set the short-body here in case we've modified the body in obfuscate
-            if (json && json.body) {
+            if (json && json.body && json['short-body'] === true) {
               json['short-body'] = util.inspect(json.body).substring(0, 20);
             }
 
