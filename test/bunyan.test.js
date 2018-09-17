@@ -135,20 +135,24 @@ describe('bunyan-logger', function() {
   });
 
   describe('test obfuscate', function() {
-    var app, output,
+    var app, output, bodyPass,
         USERNAME = 'MY_USER',
         PASSWORD = 'MY_PASSWORD';
 
     beforeEach(function() {
       app = express();
       app.use(require('body-parser').json());
+      app.use(function(req, res, next) {
+        bodyPass = req.body.password;
+        next();
+      });
       output = st();
     });
 
     it('obfuscates body', function(done) {
       app.use(bunyanLogger({
         stream: output,
-        obfuscate: ['req.body.password']
+        obfuscate: ['req.body.password', 'body.password']
       }));
 
       app.post('/', function(req, res) {
@@ -167,6 +171,7 @@ describe('bunyan-logger', function() {
           assert(json.body);
           assert.equal(json.body.username, USERNAME);
           assert.equal(json.body.password, '[HIDDEN]');
+          assert.equal(PASSWORD, bodyPass);
 
           done();
         });
@@ -177,7 +182,7 @@ describe('bunyan-logger', function() {
 
       app.use(bunyanLogger({
         stream: output,
-        obfuscate: ['req.body.password'],
+        obfuscate: ['req.body.password', 'body.password'],
         obfuscatePlaceholder: PLACEHOLDER
       }));
 
@@ -197,6 +202,7 @@ describe('bunyan-logger', function() {
           assert(json.body);
           assert.equal(json.body.username, USERNAME);
           assert.equal(json.body.password, PLACEHOLDER);
+          assert.equal(PASSWORD, bodyPass);
 
           done();
         });
@@ -205,7 +211,7 @@ describe('bunyan-logger', function() {
     it('obfuscates short-body', function(done) {
       app.use(bunyanLogger({
         stream: output,
-        obfuscate: ['req.body.p']
+        obfuscate: ['req.body.p', 'body.p']
       }));
 
       app.post('/', function(req, res) {

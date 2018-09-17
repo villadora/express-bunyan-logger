@@ -18,6 +18,7 @@
   ],
   "dependencies": {
     "bunyan": "^1.8.12",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
     "useragent": "^2.2.1",

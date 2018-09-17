@@ -1,6 +1,7 @@
 var bunyan = require('bunyan'),
     has = require('lodash.has'),
     set = require('lodash.set'),
+    clonedeep = require('lodash.clonedeep'),
     useragent = require('useragent'),
     uuid = require('uuid'),
     util = require('util');
@@ -112,7 +113,8 @@ module.exports.errorLogger = function (opts) {
                 (req.socket && req.socket.remoteAddress) ||
                 (req.socket.socket && req.socket.socket.remoteAddress) ||
                 '127.0.0.1';
-
+            var copyOfReq = clonedeep(req);
+            var copyOfRes = clonedeep(res);
             var meta = {
                 'remote-address': ip,
                 'ip': ip,
@@ -120,16 +122,16 @@ module.exports.errorLogger = function (opts) {
                 'url': url,
                 'referer': referer,
                 'user-agent': ua,
-                'body': req.body,
+                'body': copyOfReq.body,
                 'short-body': undefined,
                 'http-version': httpVersion,
                 'response-time': responseTime,
                 "response-hrtime": hrtime,
                 "status-code": status,
-                'req-headers': req.headers,
-                'res-headers': res._headers,
-                'req': req,
-                'res': res,
+                'req-headers': copyOfReq.headers,
+                'res-headers': copyOfRes._headers,
+                'req': copyOfReq,
+                'res': copyOfRes,
                 'incoming':incoming?'-->':'<--'
             };
 
