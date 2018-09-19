@@ -80,7 +80,7 @@ module.exports.errorLogger = function (opts) {
             opts.serializers = opts.serializers || {};
             opts.serializers.req = opts.serializers.req || bunyan.stdSerializers.req;
             opts.serializers.res = opts.serializers.res || bunyan.stdSerializers.res;
-            err && (opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err);
+            opts.serializers.err = opts.serializers.err || bunyan.stdSerializers.err;
             logger = bunyan.createLogger(opts);
         }
 
