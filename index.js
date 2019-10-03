@@ -127,7 +127,7 @@ module.exports.errorLogger = function (opts) {
                 "response-hrtime": hrtime,
                 "status-code": status,
                 'req-headers': req.headers,
-                'res-headers': res._headers,
+                'res-headers': res.getHeaders(),
                 'req': req,
                 'res': res,
                 'incoming':incoming?'-->':'<--'
