@@ -20,7 +20,7 @@
     "bunyan": "^1.8.12",
     "lodash.has": "^4.5.2",
     "lodash.set": "^4.3.2",
-    "semver.gte": "^6.3.0",
+    "semver": "^6.3.0",
     "useragent": "^2.2.1",
     "uuid": "^3.1.0"
   },
