@@ -3,8 +3,11 @@ var bunyan = require('bunyan'),
     set = require('lodash.set'),
     useragent = require('useragent'),
     uuid = require('uuid'),
-    util = require('util');
+    util = require('util'),
+    semver = require('semver');
 
+// with Node 12, res._headers becomes deprecated DEP-0066
+var useGetHeader = (process && semver.gte(process.versions.node, '12.0.0'));
 
 module.exports = function (opts) {
     var logger = module.exports.errorLogger(opts);
@@ -127,7 +130,7 @@ module.exports.errorLogger = function (opts) {
                 "response-hrtime": hrtime,
                 "status-code": status,
                 'req-headers': req.headers,
-                'res-headers': res._headers,
+                'res-headers': useGetHeader ? res.getHeaders() : res._headers,
                 'req': req,
                 'res': res,
                 'incoming':incoming?'-->':'<--'
