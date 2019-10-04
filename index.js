@@ -4,10 +4,10 @@ var bunyan = require('bunyan'),
     useragent = require('useragent'),
     uuid = require('uuid'),
     util = require('util'),
-    semver = require('semver');
+    gte = require('semver.gte');
 
 // with Node 12, res._headers becomes deprecated DEP-0066
-var useGetHeader = (process && semver.gte(process.versions.node, '12.0.0'));
+var useGetHeader = (process && gte(process.versions.node, '12.0.0'));
 
 module.exports = function (opts) {
     var logger = module.exports.errorLogger(opts);
