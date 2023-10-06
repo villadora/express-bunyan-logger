@@ -1,13 +1,6 @@
 # Express-bunyan-logger
 
-A express logger middleware powered by [bunyan](https://github.com/trentm/node-bunyan).
-
-[![Build Status](https://travis-ci.org/villadora/express-bunyan-logger.svg?branch=master)](https://travis-ci.org/villadora/express-bunyan-logger) [![dependencies](https://david-dm.org/villadora/express-bunyan-logger.svg)](https://david-dm.org/villadora/express-bunyan-logger)
-
-
-## Note
-
-This year as work content change, I have no spare time to maintaining the node modules, if anyone want to take or keep maintaining, just contact me via jky239@gmail.com with Title contains: "Wanted: npm package xxxx". Thx.
+A express logger middleware powered by [bunyan](https://github.com/trentm/node-bunyan), forked from https://www.npmjs.com/package/express-bunyan-logger
 
 ## Installation
 
@@ -18,25 +11,29 @@ This year as work content change, I have no spare time to maintaining the node m
 To use the logger:
 
 ```javascript
-app.use(require('express-bunyan-logger')());
+app.use(require("express-bunyan-logger")());
 ```
 
 To use the errorLogger:
 
 ```javascript
-app.use(require('express-bunyan-logger').errorLogger());
+app.use(require("express-bunyan-logger").errorLogger());
 ```
 
 And you can also pass bunyan logger options to the logger middleware:
 
 ```javascript
-app.use(require('express-bunyan-logger')({
-    name: 'logger',
-    streams: [{
-        level: 'info',
-        stream: process.stdout
-    }]
-}));
+app.use(
+  require("express-bunyan-logger")({
+    name: "logger",
+    streams: [
+      {
+        level: "info",
+        stream: process.stdout,
+      },
+    ],
+  })
+);
 ```
 
 Change default format:
@@ -46,6 +43,7 @@ app.use(require('express-bunyan-logger')({
     format: ":remote-address - :user-agent[major] custom logger"
 });
 ```
+
 And a child logger will be attached to each request object:
 
 ```javascript
@@ -103,6 +101,7 @@ function(req, res) {
 Array of string, Those fields will be excluded from meta object which passed to bunyan
 
 ### options.obfuscate
+
 Array of strings to obfuscate.
 These strings can be in dotted notation, for instance `body.password`, and it will only replace that specific value.
 This will replace the values in log messages with a [placeholder](#optionsobfuscateplaceholder).
@@ -144,7 +143,6 @@ app.use(require('express-bunyan-logger')({
     }
 });
 ```
-
 
 ## License
 
